@@ -1,0 +1,235 @@
+<div class="complaint-details-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <button class="back-btn" (click)="goBack()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+        Back to Complaints
+      </button>
+      <h1 class="page-title">Complaint Details</h1>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading complaint details...</p>
+  </div>
+
+  <!-- Complaint Details -->
+  <div *ngIf="complaint && !isLoading" class="complaint-content">
+    <!-- Complaint Info Card -->
+    <div class="complaint-card">
+      <div class="card-header">
+        <h2 class="complaint-title">{{ complaint.title }}</h2>
+        <div class="complaint-badges">
+          <span class="badge" [ngClass]="getStatusBadgeClass(complaint.status)">
+            {{ formatEnum(complaint.status) }}
+          </span>
+          <span class="badge" [ngClass]="getPriorityBadgeClass(complaint.priority)">
+            {{ formatEnum(complaint.priority) }}
+          </span>
+        </div>
+      </div>
+      
+      <div class="complaint-info">
+        <div class="info-row">
+          <div class="info-item">
+            <label>Complaint ID:</label>
+            <span>#{{ complaint.complaintId }}</span>
+          </div>
+          <div class="info-item">
+            <label>Category:</label>
+            <span>{{ formatEnum(complaint.category) }}</span>
+          </div>
+          <div class="info-item">
+            <label>Contact Preference:</label>
+            <span>{{ formatEnum(complaint.contactPreference || '') }}</span>
+          </div>
+        </div>
+        
+        <div class="info-row">
+          <div class="info-item">
+            <label>Patient:</label>
+            <span>{{ complaint.patient?.firstname }} {{ complaint.patient?.lastname }} ({{ complaint.patient?.email }})</span>
+          </div>
+          <!-- <div class="info-item">
+            <label>Assigned To:</label>
+            <span>{{ complaint.assignedTo?.firstname }} {{ complaint.assignedTo?.lastname || 'Unassigned' }}</span>
+          </div> -->
+          <div class="info-item">
+            <label>Created:</label>
+            <span>{{ formatDate(complaint.createdAt) }}</span>
+          </div>
+        </div>
+        
+        <div class="info-row" *ngIf="complaint.updatedAt !== complaint.createdAt">
+          <div class="info-item">
+            <label>Last Updated:</label>
+            <span>{{ formatDate(complaint.updatedAt) }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="complaint-description">
+        <h3>Description</h3>
+        <p>{{ complaint.description }}</p>
+      </div>
+
+      <!-- Related Appointment -->
+      <div *ngIf="complaint.appointment" class="appointment-section">
+        <h3>Related Appointment</h3>
+        <div class="appointment-details">
+          <div class="appointment-info">
+            <strong>Appointment #{{ complaint.appointment.id }}</strong>
+            <div class="appointment-meta">
+              <span>Date: {{ formatDate(complaint.appointment.appointmentDate) }}</span>
+              <span>Time: {{ complaint.appointment.appointmentTime }}</span>
+              <span>Doctor: {{ formatDoctorName(complaint.appointment.doctor) }}</span>
+              <span>Specialization: {{ complaint.appointment.doctor.specialization.name }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resolution -->
+      <div *ngIf="complaint.resolution" class="resolution-section">
+        <h3>Resolution</h3>
+        <div class="resolution-content">
+          <div class="resolution-text">{{ complaint.resolution }}</div>
+          <div *ngIf="complaint.resolutionNotes" class="resolution-notes">
+            <strong>Resolution Notes:</strong> {{ complaint.resolutionNotes }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Feedback -->
+      <div *ngIf="complaint.customerFeedback" class="feedback-section">
+        <h3>Customer Feedback</h3>
+        <div class="customer-feedback">{{ complaint.customerFeedback }}</div>
+      </div>
+
+      <!-- Status Timeline -->
+      <div class="timeline-section">
+        <h3>Status Timeline</h3>
+        <div class="status-timeline">
+          <div class="timeline-item">
+            <div class="timeline-marker status-open"></div>
+            <div class="timeline-content">
+              <div class="timeline-title">Complaint Submitted</div>
+              <div class="timeline-date">{{ formatDate(complaint.createdAt) }}</div>
+            </div>
+          </div>
+          <div *ngIf="complaint.status !== 'OPEN'" class="timeline-item">
+            <div class="timeline-marker" [class]="'status-' + complaint.status.toLowerCase().replace('_', '-')"></div>
+            <div class="timeline-content">
+              <div class="timeline-title">Status: {{ formatEnum(complaint.status) }}</div>
+              <div class="timeline-date">{{ formatDate(complaint.updatedAt) }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assignment Status -->
+    <!-- <div class="assignment-status-card" *ngIf="!canEdit && !isComplaintClosed()">
+      <div class="assignment-warning">
+        <div class="warning-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <div class="warning-content">
+          <h3>Complaint Not Assigned to You</h3>
+          <p>This complaint is assigned to <strong>{{ complaint.assignedTo?.firstname }} {{ complaint.assignedTo?.lastname }}</strong>. Only the assigned admin can make changes.</p>
+        </div>
+      </div>
+    </div> -->
+
+    <!-- Admin Actions Form -->
+    <div class="admin-actions-card" *ngIf="canEdit && !isComplaintClosed()">
+      <h3>Admin Actions</h3>
+      
+      <!-- Auto-progression notice -->
+      <div class="status-notice" *ngIf="complaint?.status === 'OPEN'">
+        <div class="notice-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+        </div>
+        <div class="notice-content">
+          <strong>Auto-Progression Notice:</strong> When you update this OPEN complaint, it will automatically progress to "In Progress" status.
+        </div>
+      </div>
+      
+      <form [formGroup]="adminForm" (ngSubmit)="updateComplaint()" class="admin-form">
+         <div class="form-row">
+           <div class="form-group">
+             <label class="form-label">Status *</label>
+             <div class="radio-button-group">
+               <button *ngFor="let status of getAvailableStatusOptions()" 
+                       type="button"
+                       class="radio-button-option status-{{ status.value }}"
+                       [class.selected]="isStatusSelected(status.value)"
+                       (click)="selectStatus(status.value)">
+                 {{ status.label }}
+               </button>
+             </div>
+           </div>
+           <div class="form-group">
+             <label class="form-label">Priority *</label>
+             <select formControlName="priority" class="form-select"
+                     [value]="selectedPriority"
+                     (change)="onPriorityChange($event)">
+               <option value="">Select priority...</option>
+               <option *ngFor="let priority of priorityOptions" 
+                       [value]="priority.value">
+                 {{ priority.label }}
+               </option>
+             </select>
+           </div>
+         </div>
+        
+        <!-- <div class="form-group">
+          <label class="form-label">Assign to Admin</label>
+          <select formControlName="assignedTo" class="form-select">
+            <option value="">Select an admin...</option>
+            <option *ngFor="let admin of admins" [value]="admin.id">
+              {{ admin.firstname }} {{ admin.lastname }} ({{ admin.email }})
+            </option>
+          </select>
+        </div> -->
+        
+        <div class="form-group">
+          <label class="form-label">Resolution Statement *</label>
+          <textarea formControlName="resolution" class="form-textarea" 
+                    placeholder="Enter resolution details..." rows="4"></textarea>
+        </div>
+        
+         <div class="form-actions">
+           <button type="submit" class="btn btn-primary" [disabled]="!adminForm.valid || isSubmitting">
+             <span *ngIf="isSubmitting" class="btn-spinner"></span>
+             {{ isSubmitting ? 'Updating...' : 'Update Complaint' }}
+           </button>
+         </div>
+      </form>
+    </div>
+
+    <!-- Closed Status Message -->
+    <div *ngIf="isComplaintClosed()" class="closed-status-message">
+      <div class="closed-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 12l2 2 4-4"/>
+          <circle cx="12" cy="12" r="10"/>
+        </svg>
+      </div>
+      <h3>Complaint Closed</h3>
+      <p>This complaint has been resolved and closed. No further changes can be made.</p>
+    </div>
+  </div>
+</div>

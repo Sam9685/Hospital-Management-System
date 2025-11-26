@@ -1,0 +1,257 @@
+<!-- Appointment Details Modal -->
+<div *ngIf="showModal" class="modal-overlay" (click)="onCloseModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title">Appointment Details</h3>
+      <button class="modal-close" (click)="onCloseModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading appointment details...</p>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error && !isLoading" class="error-state">
+        <div class="error-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+          </svg>
+        </div>
+        <p>{{ error }}</p>
+        <button class="btn-primary" (click)="loadAppointmentDetails()">Retry</button>
+      </div>
+
+      <!-- Appointment Details -->
+      <div *ngIf="appointment && !isLoading" class="appointment-details">
+        <!-- Header with Status and Actions -->
+        <div class="details-header">
+          <div class="status-section">
+            <span class="badge" [class]="getStatusBadgeClass(appointment.status)">
+              {{ appointment.status }}
+            </span>
+            <span class="badge" [class]="getTypeBadgeClass(appointment.appointmentType)">
+              {{ appointment.appointmentType.replace('_', ' ') }}
+            </span>
+          </div>
+          <div class="actions-section" *ngIf="canCancelAppointment()">
+            <button class="btn-danger" (click)="onCancelAppointment()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+              Cancel Appointment
+            </button>
+          </div>
+        </div>
+
+        <!-- Patient Information -->
+        <div class="details-section">
+          <h4 class="section-title">Patient Information</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Name:</span>
+              <span class="info-value">{{ appointment.patient.firstName }} {{ appointment.patient.lastName }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Email:</span>
+              <span class="info-value">{{ appointment.patient.email }}</span>
+            </div>
+            <div class="info-item" *ngIf="appointment.patient.contact">
+              <span class="info-label">Contact:</span>
+              <span class="info-value">{{ appointment.patient.contact }}</span>
+            </div>
+            <div class="info-item" *ngIf="appointment.patient.gender">
+              <span class="info-label">Gender:</span>
+              <span class="info-value">{{ appointment.patient.gender }}</span>
+            </div>
+            <div class="info-item" *ngIf="appointment.patient.bloodGroup">
+              <span class="info-label">Blood Group:</span>
+              <span class="info-value">{{ appointment.patient.bloodGroup }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Doctor Information -->
+        <div class="details-section">
+          <h4 class="section-title">Doctor Information</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Name:</span>
+              <span class="info-value">Dr. {{ appointment.doctor.firstName }} {{ appointment.doctor.lastName }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Specialization:</span>
+              <span class="info-value">{{ appointment.doctor.specialization }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Consultation Fee:</span>
+              <span class="info-value">{{ formatCurrency(appointment.consultationFee) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Appointment Information -->
+        <div class="details-section">
+          <h4 class="section-title">Appointment Information</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Date:</span>
+              <span class="info-value">{{ formatDate(appointment.appointmentDate) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Time:</span>
+              <span class="info-value">{{ formatTime(appointment.appointmentTime) }} - {{
+                formatTime(appointment.endTime) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Type:</span>
+              <span class="info-value">{{ appointment.appointmentType.replace('_', ' ') }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Status:</span>
+              <span class="info-value">{{ appointment.status }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Medical Information -->
+        <div class="details-section" *ngIf="shouldShowSensitiveInfo() && (appointment.symptoms || appointment.notes)">
+          <h4 class="section-title">Medical Information</h4>
+          <div class="info-grid">
+            <div class="info-item" *ngIf="appointment.symptoms">
+              <span class="info-label">Symptoms:</span>
+              <span class="info-value">{{ appointment.symptoms }}</span>
+            </div>
+            <div class="info-item" *ngIf="appointment.notes">
+              <span class="info-label">Notes:</span>
+              <span class="info-value">{{ appointment.notes }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin View - Limited Information -->
+        <div class="details-section" *ngIf="isAdmin()">
+          <h4 class="section-title">Appointment Summary</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Status:</span>
+              <span class="info-value">
+                <span class="status-badge" [ngClass]="getStatusBadgeClass(appointment.status)">
+                  {{ appointment.status }}
+                </span>
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Type:</span>
+              <span class="info-value">
+                <span class="badge" [ngClass]="getTypeBadgeClass(appointment.appointmentType)">
+                  {{ appointment.appointmentType }}
+                </span>
+              </span>
+            </div>
+            <div class="info-item" *ngIf="appointment.symptoms">
+              <span class="info-label">Has Symptoms:</span>
+              <span class="info-value">{{ appointment.symptoms ? 'Yes' : 'No' }}</span>
+            </div>
+            <div class="info-item" *ngIf="appointment.notes">
+              <span class="info-label">Has Notes:</span>
+              <span class="info-value">{{ appointment.notes ? 'Yes' : 'No' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cancellation Information -->
+        <div class="details-section" *ngIf="appointment.status === 'CANCELLED'">
+          <h4 class="section-title">Cancellation Information</h4>
+          <div class="info-grid">
+            <div class="info-item" *ngIf="appointment.cancellationReason">
+              <span class="info-label">Reason:</span>
+              <span class="info-value">{{ appointment.cancellationReason }}</span>
+            </div>
+            <div class="info-item" *ngIf="appointment.cancelledAt">
+              <span class="info-label">Cancelled At:</span>
+              <!-- <span class="info-value">{{ formatDate(appointment.cancelledAt) }} at {{ formatTime(appointment.cancelledAt) }}</span> -->
+              <span class="info-value">{{ formatDate(appointment.cancelledAt) }}</span>
+
+            </div>
+            <div class="info-item" *ngIf="appointment.cancelledByName">
+              <span class="info-label">Cancelled By:</span>
+              <span class="info-value">
+                {{ appointment.cancelledByName }}
+                <span class="cancelled-by-type" *ngIf="appointment.cancelledByType">
+                  ({{ appointment.cancelledByType }})
+                </span>
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Refund Status:</span>
+              <span class="info-value refund-status">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="refund-icon">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                  <path d="M2 17l10 5 10-5"/>
+                  <path d="M2 12l10 5 10-5"/>
+                </svg>
+                Refund initiated of {{ formatCurrency(appointment.consultationFee) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timestamps -->
+        <div class="details-section">
+          <h4 class="section-title">Timestamps</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Created:</span>
+              <span class="info-value">{{ formatDate(appointment.createdAt) }} at {{ formatTime(appointment.createdAt)
+                }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="onCloseModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cancellation Modal -->
+<div *ngIf="showCancelModal" class="modal-overlay" (click)="onCloseCancelModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title">Cancel Appointment</h3>
+      <button class="modal-close" (click)="onCloseCancelModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Reason for cancellation:</label>
+        <textarea [(ngModel)]="cancelReason" placeholder="Please provide a reason for cancelling this appointment..."
+          rows="3" class="form-textarea">
+        </textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="onCloseCancelModal()">Keep Appointment</button>
+      <button class="btn-danger" (click)="confirmCancel()" [disabled]="!cancelReason.trim()">
+        Cancel Appointment
+      </button>
+    </div>
+  </div>
+</div>

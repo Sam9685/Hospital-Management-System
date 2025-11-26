@@ -1,0 +1,62 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: hospital-management-system
+  
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: true
+  
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data.sql
+      continue-on-error: false
+  
+  security:
+    user:
+      name: admin
+      password: admin123
+
+jwt:
+  secret: mySecretKey123456789012345678901234567890
+  expiration: 604800000 # 7 days in milliseconds (1 week)
+
+# Swagger/OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui/index.html
+  show-actuator: true
+
+logging:
+  level:
+    com.example.SpringDemo: DEBUG
+    org.springframework.security: DEBUG
+
+# Application-specific configuration
+app:
+  # Auto-generate doctor slots on application startup
+  auto-generate-doctor-slots: true
+  # Number of days to generate slots for (default: 30 days)
+  slot-generation-days: 30

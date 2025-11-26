@@ -1,0 +1,269 @@
+<div class="appointments-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">My Appointments</h1>
+      <p class="page-subtitle">Manage your patient appointments and schedule</p>
+    </div>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="search-filters-section">
+    <div class="search-bar">
+      <div class="search-input-container">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input 
+          type="text" 
+          placeholder="Search appointments by patient name..."
+          class="search-input"
+          (input)="onSearch($event)"
+        />
+      </div>
+      <button class="filter-btn" (click)="toggleFilters()" [class.active]="showFilters">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
+        </svg>
+        Filters
+      </button>
+    </div>
+
+    <!-- Filter Panel -->
+    <div class="filter-panel" [class.show]="showFilters">
+      <form [formGroup]="filterForm" class="filter-form">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label class="filter-label">Status</label>
+            <select formControlName="status" class="filter-select">
+              <option *ngFor="let status of statuses" [value]="status.value">{{ status.label }}</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Type</label>
+            <select formControlName="type" class="filter-select">
+              <option *ngFor="let type of types" [value]="type.value">{{ type.label }}</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Date From</label>
+            <input 
+              type="date" 
+              formControlName="dateFrom" 
+              class="filter-input"
+              [max]="maxFromDate"
+              (change)="onFromDateChange($event)"
+            >
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Date To</label>
+            <input 
+              type="date" 
+              formControlName="dateTo" 
+              class="filter-input"
+              [min]="minToDate"
+              (change)="onToDateChange($event)"
+            >
+          </div>
+        </div>
+        <div class="filter-actions">
+          <button type="button" class="apply-filters-btn" (click)="applyFilters()">
+            Apply Filters
+          </button>
+          <button type="button" class="clear-filters-btn" (click)="clearFilters()">
+            Clear All
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Table Container -->
+  <div class="table-container">
+    <div class="table-header">
+      <div class="table-info">
+        <span class="total-count">{{ totalElements }} appointments found</span>
+        <div class="page-size-selector">
+          <label>Show:</label>
+          <select (change)="onPageSizeChange($event)" [value]="pageSize">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading">
+      <div class="loading-spinner"></div>
+      <p>Loading appointments...</p>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrapper" *ngIf="!isLoading">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th *ngFor="let column of columns" 
+                [class.sortable]="column.sortable"
+                (click)="column.sortable ? onSort(column.key) : null">
+              <div class="th-content">
+                <span>{{ column.label }}</span>
+                <svg *ngIf="column.sortable" 
+                     class="sort-icon" 
+                     [class.active]="sortBy === column.key"
+                     viewBox="0 0 24 24" 
+                     fill="none" 
+                     stroke="currentColor" 
+                     stroke-width="2">
+                  <ng-container [ngSwitch]="getSortIcon(column.key)">
+                    <g *ngSwitchCase="'sort'">
+                      <path d="M3 6h18M3 12h18M3 18h18"/>
+                    </g>
+                    <g *ngSwitchCase="'sort-up'">
+                      <path d="M3 6h18M3 12h18M3 18h18"/>
+                      <path d="M7 6l5 5 5-5"/>
+                    </g>
+                    <g *ngSwitchCase="'sort-down'">
+                      <path d="M3 6h18M3 12h18M3 18h18"/>
+                      <path d="M7 18l5-5 5 5"/>
+                    </g>
+                  </ng-container>
+                </svg>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let appointment of appointments" class="table-row" [class.deleted-row]="appointment.deletedAt">
+            <td class="appointment-id">
+              <span *ngIf="appointment.deletedAt" class="deleted-indicator">DELETED</span>
+              {{ appointment.id }}
+            </td>
+            <td class="patient-info">
+              <div class="patient-details">
+                <div class="patient-avatar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                </div>
+                <div class="patient-text">
+                  <div class="patient-name" [class.deleted-text]="appointment.deletedAt">{{ appointment.patient.name }}</div>
+                  <div class="patient-contact" [class.deleted-text]="appointment.deletedAt">{{ appointment.patient.contact || appointment.patient.email }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="appointment-date" [class.deleted-text]="appointment.deletedAt">{{ formatDate(appointment.appointmentDate) }}</td>
+            <td class="appointment-time" [class.deleted-text]="appointment.deletedAt">{{ appointment.appointmentTime }}</td>
+            <td class="appointment-type">
+              <span class="badge" [class]="getTypeBadgeClass(appointment.appointmentType || '')" [class.deleted-badge]="appointment.deletedAt">
+                {{ (appointment.appointmentType || '').replace('_', ' ') }}
+              </span>
+            </td>
+            <td class="appointment-status">
+              <span class="badge" [class]="getStatusBadgeClass(appointment.status)" [class.deleted-badge]="appointment.deletedAt">
+                {{ appointment.status }}
+              </span>
+            </td>
+            <td class="appointment-fee" [class.deleted-text]="appointment.deletedAt">{{ formatCurrency(appointment.consultationFee || 0) }}</td>
+            <td class="appointment-actions">
+              <div class="action-buttons">
+                <button class="action-btn view-btn" 
+                        [disabled]="appointment.deletedAt"
+                        [class.disabled]="appointment.deletedAt"
+                        (click)="viewAppointment(appointment)" 
+                        title="View Details">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+                <button class="action-btn complete-btn" 
+                        [disabled]="appointment.deletedAt || appointment.status === 'COMPLETED' || appointment.status === 'CANCELLED' || !canCompleteAppointment(appointment)"
+                        [class.disabled]="appointment.deletedAt || appointment.status === 'COMPLETED' || appointment.status === 'CANCELLED' || !canCompleteAppointment(appointment)"
+                        (click)="completeAppointment(appointment)" 
+                        [title]="!canCompleteAppointment(appointment) ? 'Cannot complete future appointment' : 'Mark as Completed'">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"/>
+                  </svg>
+                </button>
+                <button class="action-btn cancel-btn" 
+                        [disabled]="appointment.deletedAt || appointment.status === 'CANCELLED'"
+                        [class.disabled]="appointment.deletedAt || appointment.status === 'CANCELLED'"
+                        (click)="cancelAppointment(appointment)" 
+                        title="Cancel Appointment">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="appointments.length === 0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <h3>No appointments found</h3>
+        <p>Try adjusting your search or filter criteria</p>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="!isLoading && appointments.length > 0">
+      <div class="pagination-info">
+        <span>
+          Showing {{ (currentPage * pageSize) + 1 }} to {{ Math.min((currentPage + 1) * pageSize, totalElements) }} of {{ totalElements }} appointments
+        </span>
+      </div>
+      <div class="pagination-controls">
+        <button class="pagination-btn" 
+                [disabled]="currentPage === 0"
+                (click)="onPageChange(currentPage - 1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15,18 9,12 15,6"/>
+          </svg>
+          Previous
+        </button>
+        
+        <div class="page-numbers">
+          <button *ngFor="let page of getPageNumbers()" 
+                  class="page-number" 
+                  [class.active]="page === currentPage"
+                  (click)="onPageChange(page)">
+            {{ page + 1 }}
+          </button>
+        </div>
+        
+        <button class="pagination-btn" 
+                [disabled]="currentPage >= totalPages - 1"
+                (click)="onPageChange(currentPage + 1)">
+          Next
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9,18 15,12 9,6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Appointment Details Modal -->
+<app-appointment-details-modal
+  [appointmentId]="selectedAppointmentId"
+  [showModal]="showAppointmentDetailsModal"
+  [userRole]="'DOCTOR'"
+  (closeModal)="onCloseAppointmentDetailsModal()"
+  (appointmentCancelled)="onAppointmentCancelled()">
+</app-appointment-details-modal>

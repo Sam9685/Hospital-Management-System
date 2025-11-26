@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Doctor Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            color: #34495e;
+            margin-top: 0;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .success {
+            background-color: #2ecc71;
+        }
+        .error {
+            background-color: #e74c3c;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success-result {
+            background-color: #d5f4e6;
+            border: 1px solid #2ecc71;
+            color: #27ae60;
+        }
+        .error-result {
+            background-color: #fadbd8;
+            border: 1px solid #e74c3c;
+            color: #c0392b;
+        }
+        .doctor-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .doctor-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        .doctor-card h4 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+        .doctor-card p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Doctor Login Test</h1>
+        
+        <div class="test-section">
+            <h3>Test Doctor Login API</h3>
+            <p>Click the buttons below to test doctor login with different doctor credentials:</p>
+            
+            <div class="doctor-list">
+                <div class="doctor-card">
+                    <h4>Dr. James Mitchell</h4>
+                    <p><strong>Email:</strong> james.mitchell@doctor.com</p>
+                    <p><strong>Password:</strong> Password123</p>
+                    <p><strong>Specialization:</strong> Cardiology</p>
+                    <button onclick="testDoctorLogin('james.mitchell@doctor.com', 'Password123', 'Dr. James Mitchell')">Test Login</button>
+                </div>
+                
+                <div class="doctor-card">
+                    <h4>Dr. Maria Santos</h4>
+                    <p><strong>Email:</strong> maria.santos@doctor.com</p>
+                    <p><strong>Password:</strong> Password123</p>
+                    <p><strong>Specialization:</strong> Cardiology</p>
+                    <button onclick="testDoctorLogin('maria.santos@doctor.com', 'Password123', 'Dr. Maria Santos')">Test Login</button>
+                </div>
+                
+                <div class="doctor-card">
+                    <h4>Dr. Robert Chen</h4>
+                    <p><strong>Email:</strong> robert.chen@doctor.com</p>
+                    <p><strong>Password:</strong> Password123</p>
+                    <p><strong>Specialization:</strong> Neurology</p>
+                    <button onclick="testDoctorLogin('robert.chen@doctor.com', 'Password123', 'Dr. Robert Chen')">Test Login</button>
+                </div>
+                
+                <div class="doctor-card">
+                    <h4>Dr. Sarah Williams</h4>
+                    <p><strong>Email:</strong> sarah.williams@doctor.com</p>
+                    <p><strong>Password:</strong> Password123</p>
+                    <p><strong>Specialization:</strong> Neurology</p>
+                    <button onclick="testDoctorLogin('sarah.williams@doctor.com', 'Password123', 'Dr. Sarah Williams')">Test Login</button>
+                </div>
+                
+                <div class="doctor-card">
+                    <h4>Dr. Michael Johnson</h4>
+                    <p><strong>Email:</strong> michael.johnson@doctor.com</p>
+                    <p><strong>Password:</strong> Password123</p>
+                    <p><strong>Specialization:</strong> Orthopedics</p>
+                    <button onclick="testDoctorLogin('michael.johnson@doctor.com', 'Password123', 'Dr. Michael Johnson')">Test Login</button>
+                </div>
+                
+                <div class="doctor-card">
+                    <h4>Dr. Jennifer Davis</h4>
+                    <p><strong>Email:</strong> jennifer.davis@doctor.com</p>
+                    <p><strong>Password:</strong> Password123</p>
+                    <p><strong>Specialization:</strong> Orthopedics</p>
+                    <button onclick="testDoctorLogin('jennifer.davis@doctor.com', 'Password123', 'Dr. Jennifer Davis')">Test Login</button>
+                </div>
+            </div>
+            
+            <div id="loginResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Invalid Credentials</h3>
+            <p>Test with invalid doctor credentials to ensure proper error handling:</p>
+            <button onclick="testInvalidCredentials()">Test Invalid Password</button>
+            <button onclick="testNonExistentDoctor()">Test Non-existent Doctor</button>
+            <div id="invalidResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Regular User Login (Should NOT work with @doctor.com)</h3>
+            <p>Test that regular users cannot login as doctors:</p>
+            <button onclick="testRegularUserAsDoctor()">Test Regular User Email</button>
+            <div id="regularUserResult" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080';
+        
+        async function testDoctorLogin(email, password, doctorName) {
+            const resultDiv = document.getElementById('loginResult');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Testing doctor login...';
+            resultDiv.className = 'result';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    resultDiv.className = 'result success-result';
+                    resultDiv.textContent = `✅ SUCCESS: ${doctorName} login successful!\n\n` +
+                        `Response Data:\n` +
+                        `- Token: ${data.data.token.substring(0, 50)}...\n` +
+                        `- Role: ${data.data.role}\n` +
+                        `- User ID: ${data.data.userId}\n` +
+                        `- Username: ${data.data.username}\n` +
+                        `- Email: ${data.data.email}\n` +
+                        `- Full Name: ${data.data.fullName}\n` +
+                        `- Message: ${data.message}`;
+                } else {
+                    resultDiv.className = 'result error-result';
+                    resultDiv.textContent = `❌ FAILED: ${doctorName} login failed!\n\n` +
+                        `Status: ${response.status}\n` +
+                        `Response: ${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error-result';
+                resultDiv.textContent = `❌ ERROR: ${doctorName} login test failed!\n\n` +
+                    `Error: ${error.message}\n\n` +
+                    `Make sure the backend server is running on http://localhost:8080`;
+            }
+        }
+        
+        async function testInvalidCredentials() {
+            const resultDiv = document.getElementById('invalidResult');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Testing invalid credentials...';
+            resultDiv.className = 'result';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'james.mitchell@doctor.com',
+                        password: 'WrongPassword123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok || !data.success) {
+                    resultDiv.className = 'result success-result';
+                    resultDiv.textContent = `✅ SUCCESS: Invalid credentials properly rejected!\n\n` +
+                        `Status: ${response.status}\n` +
+                        `Response: ${JSON.stringify(data, null, 2)}`;
+                } else {
+                    resultDiv.className = 'result error-result';
+                    resultDiv.textContent = `❌ FAILED: Invalid credentials were accepted!\n\n` +
+                        `Response: ${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error-result';
+                resultDiv.textContent = `❌ ERROR: Test failed!\n\n` +
+                    `Error: ${error.message}`;
+            }
+        }
+        
+        async function testNonExistentDoctor() {
+            const resultDiv = document.getElementById('invalidResult');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Testing non-existent doctor...';
+            resultDiv.className = 'result';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'nonexistent.doctor@doctor.com',
+                        password: 'Password123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok || !data.success) {
+                    resultDiv.className = 'result success-result';
+                    resultDiv.textContent = `✅ SUCCESS: Non-existent doctor properly rejected!\n\n` +
+                        `Status: ${response.status}\n` +
+                        `Response: ${JSON.stringify(data, null, 2)}`;
+                } else {
+                    resultDiv.className = 'result error-result';
+                    resultDiv.textContent = `❌ FAILED: Non-existent doctor was accepted!\n\n` +
+                        `Response: ${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error-result';
+                resultDiv.textContent = `❌ ERROR: Test failed!\n\n` +
+                    `Error: ${error.message}`;
+            }
+        }
+        
+        async function testRegularUserAsDoctor() {
+            const resultDiv = document.getElementById('regularUserResult');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Testing regular user with @doctor.com domain...';
+            resultDiv.className = 'result';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@doctor.com', // This should be treated as doctor login
+                        password: 'Password123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success && data.data.role === 'DOCTOR') {
+                    resultDiv.className = 'result error-result';
+                    resultDiv.textContent = `❌ FAILED: Regular user was treated as doctor!\n\n` +
+                        `This email should not exist in doctors table.\n` +
+                        `Response: ${JSON.stringify(data, null, 2)}`;
+                } else {
+                    resultDiv.className = 'result success-result';
+                    resultDiv.textContent = `✅ SUCCESS: Regular user properly rejected as doctor!\n\n` +
+                        `Status: ${response.status}\n` +
+                        `Response: ${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error-result';
+                resultDiv.textContent = `❌ ERROR: Test failed!\n\n` +
+                    `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

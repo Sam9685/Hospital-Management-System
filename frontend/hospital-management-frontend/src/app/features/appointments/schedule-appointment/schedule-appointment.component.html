@@ -1,0 +1,266 @@
+<div class="schedule-appointment-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Schedule Appointment</h1>
+      <p class="page-subtitle">Find and book an appointment with our expert doctors</p>
+    </div>
+  </div>
+
+  <!-- Search Form -->
+  <div class="search-section">
+    <div class="search-card">
+      <h2 class="search-title">Find Available Appointments</h2>
+      <form [formGroup]="searchForm" (ngSubmit)="searchAppointments()" class="search-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Specialization *</label>
+            <select formControlName="specializationId" class="form-select" 
+                    [class.error]="searchForm.get('specializationId')?.invalid && searchForm.get('specializationId')?.touched">
+              <option value="">Choose specialization...</option>
+              <option *ngFor="let spec of specializations" [value]="spec.specializationId">
+                {{ spec.name }}
+              </option>
+            </select>
+            <div *ngIf="searchForm.get('specializationId')?.invalid && searchForm.get('specializationId')?.touched" 
+                 class="error-message">
+              Please select a specialization
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Appointment Date *</label>
+            <input type="date" formControlName="appointmentDate" class="form-input" 
+                   [min]="minDate" [max]="maxDate"
+                   [class.error]="searchForm.get('appointmentDate')?.invalid && searchForm.get('appointmentDate')?.touched">
+            <div *ngIf="searchForm.get('appointmentDate')?.invalid && searchForm.get('appointmentDate')?.touched" 
+                 class="error-message">
+              <div *ngIf="searchForm.get('appointmentDate')?.errors?.['required']">Please select a date</div>
+              <div *ngIf="searchForm.get('appointmentDate')?.errors?.['pastDate']">Please select today or a future date</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <button type="submit" class="search-btn" [disabled]="!searchForm.valid || isLoading">
+              <svg *ngIf="isLoading" class="loading-spinner" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="31.416" stroke-dashoffset="31.416">
+                  <animate attributeName="stroke-dasharray" dur="2s" values="0 31.416;15.708 15.708;0 31.416" repeatCount="indefinite"/>
+                  <animate attributeName="stroke-dashoffset" dur="2s" values="0;-15.708;-31.416" repeatCount="indefinite"/>
+                </circle>
+              </svg>
+              <span *ngIf="!isLoading">Search Appointments</span>
+              <span *ngIf="isLoading">Searching...</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  <div *ngIf="availableSlots.length > 0" class="results-section">
+    <div class="results-header">
+      <h2 class="results-title">Available Doctors</h2>
+      <p class="results-subtitle">{{ totalItems }} doctor(s) available on {{ formatDate(searchForm.value.appointmentDate) }}</p>
+    </div>
+
+    <!-- Doctor Cards -->
+    <div class="doctors-grid">
+      <div *ngFor="let doctorData of paginatedSlots" class="doctor-card" [class.deleted-card]="doctorData.doctor.deletedAt">
+        <div class="doctor-header">
+          <div class="doctor-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+          <div class="doctor-info">
+            <div class="doctor-name-section">
+              <span *ngIf="doctorData.doctor.deletedAt" class="deleted-indicator">DELETED</span>
+              <h3 class="doctor-name" [class.deleted-text]="doctorData.doctor.deletedAt">Dr. {{ doctorData.doctor.firstName }} {{ doctorData.doctor.lastName }}</h3>
+            </div>
+            <p class="doctor-specialization" [class.deleted-text]="doctorData.doctor.deletedAt">{{ doctorData.doctor.specialization.name }}</p>
+            <p class="doctor-experience" [class.deleted-text]="doctorData.doctor.deletedAt">{{ doctorData.doctor.yearsOfExp }} years experience</p>
+          </div>
+          <div class="doctor-fee">
+            <span class="fee-amount">₹{{ doctorData.doctor.consultationFee }}</span>
+            <span class="fee-label">per consultation</span>
+          </div>
+        </div>
+
+        <div class="doctor-bio">
+          <p>{{ doctorData.doctor.bio }}</p>
+        </div>
+
+        <div class="available-slots">
+          <h4 class="slots-title">Available Time Slots</h4>
+          <div class="slots-grid">
+            <button *ngFor="let slot of doctorData.slots" 
+                    class="slot-btn" 
+                    [class.selected]="selectedSlot?.slotId === slot.slotId"
+                    (click)="selectSlot(slot)">
+              {{ formatTime(slot.startTime) }}
+            </button>
+          </div>
+        </div>
+
+        <div class="doctor-actions">
+          <button class="book-btn" 
+                  [disabled]="doctorData.doctor.deletedAt"
+                  [class.disabled]="doctorData.doctor.deletedAt"
+                  (click)="selectDoctor(doctorData)">
+            {{ doctorData.doctor.deletedAt ? 'Unavailable' : 'Book Appointment' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="totalPages > 1" class="pagination">
+      <button class="pagination-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+        Previous
+      </button>
+      
+      <div class="pagination-numbers">
+        <button *ngFor="let page of getPageNumbers()" 
+                class="pagination-number" 
+                [class.active]="page === currentPage"
+                (click)="goToPage(page)">
+          {{ page }}
+        </button>
+      </div>
+      
+      <button class="pagination-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+        Next
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m9 18 6-6-6-6"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- No Results -->
+  <div *ngIf="availableSlots.length === 0 && searchForm.valid && !isLoading" class="no-results">
+    <div class="no-results-content">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="m9 12 2 2 4-4"/>
+      </svg>
+      <h3>No Available Appointments</h3>
+      <p>No doctors are available for the selected specialization and date. Please try a different date or specialization.</p>
+    </div>
+  </div>
+
+  <!-- Booking Modal -->
+  <div *ngIf="showBookingForm" class="booking-modal-overlay" (click)="cancelBooking()">
+    <div class="booking-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Book Appointment</h3>
+        <button class="modal-close" (click)="cancelBooking()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-content">
+        <div class="appointment-summary">
+          <h4>Appointment Details</h4>
+          <div class="summary-item">
+            <span class="summary-label">Doctor:</span>
+            <span class="summary-value">{{ selectedDoctor ? 'Dr. ' + selectedDoctor.firstName + ' ' + selectedDoctor.lastName : 'Not selected' }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Specialization:</span>
+            <span class="summary-value">{{ selectedDoctor?.specialization?.name || 'Not selected' }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Date:</span>
+            <span class="summary-value">{{ formatDate(searchForm.value.appointmentDate) }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Time:</span>
+            <span class="summary-value">{{ selectedSlot ? formatTime(selectedSlot.startTime) : 'Not selected' }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Type:</span>
+            <span class="summary-value">{{ bookingForm.value.appointmentType || 'Consultation' }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Fee:</span>
+            <span class="summary-value">₹{{ selectedDoctor?.consultationFee || '0' }}</span>
+          </div>
+        </div>
+
+        <form [formGroup]="bookingForm" (ngSubmit)="bookAppointment()" class="booking-form">
+          <div class="form-group">
+            <label class="form-label">Appointment Type *</label>
+            <select formControlName="appointmentType" class="form-select">
+              <option *ngFor="let type of appointmentTypes" [value]="type.value">{{ type.label }}</option>
+            </select>
+            <div *ngIf="bookingForm.get('appointmentType')?.invalid && bookingForm.get('appointmentType')?.touched" 
+                 class="form-error">
+              Please select an appointment type
+            </div>
+            <div class="form-help" *ngIf="bookingForm.value.appointmentType">
+              {{ getAppointmentTypeDescription(bookingForm.value.appointmentType) }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Symptoms *</label>
+            <textarea formControlName="symptoms" class="form-textarea" 
+                      placeholder="Please describe your symptoms in detail..." 
+                      rows="4"></textarea>
+            <div *ngIf="bookingForm.get('symptoms')?.invalid && bookingForm.get('symptoms')?.touched" 
+                 class="form-error">
+              Please describe your symptoms (minimum 10 characters)
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Additional Notes</label>
+            <textarea formControlName="notes" class="form-textarea" 
+                      placeholder="Any additional information you'd like to share..." rows="3"></textarea>
+            <div class="form-help">Optional: Any additional information that might help the doctor</div>
+          </div>
+
+          <div class="form-actions">
+            <!-- <button type="button" class="btn btn-outline" (click)="downloadAppointmentReceipt()" 
+                    [disabled]="!selectedSlot || !selectedDoctor">
+              <svg class="btn-icon" viewBox="0 0 24 24">
+                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+              </svg>
+              Download Receipt
+            </button> -->
+            <button type="button" class="btn btn-secondary" (click)="cancelBooking()">
+              Cancel
+            </button>
+            <button type="button" class="btn btn-primary" 
+                    [disabled]="!bookingForm.valid || !selectedSlot || isBooking"
+                    (click)="proceedToPayment()">
+              <svg *ngIf="isBooking" class="loading-spinner" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="31.416" stroke-dashoffset="31.416">
+                  <animate attributeName="stroke-dasharray" dur="2s" values="0 31.416;15.708 15.708;0 31.416" repeatCount="indefinite"/>
+                  <animate attributeName="stroke-dashoffset" dur="2s" values="0;-15.708;-31.416" repeatCount="indefinite"/>
+                </circle>
+              </svg>
+              <span *ngIf="!isBooking">Proceed to Payment</span>
+              <span *ngIf="isBooking">Processing...</span>
+            </button>
+            
+            <!-- Debug info for troubleshooting -->
+            <div *ngIf="!selectedSlot" class="debug-info">
+              <small style="color: #dc3545;">⚠️ Please select a time slot to proceed</small>
+            </div>
+            <div *ngIf="selectedSlot && !bookingForm.valid" class="debug-info">
+              <small style="color: #dc3545;">⚠️ Please fill in the symptoms field</small>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

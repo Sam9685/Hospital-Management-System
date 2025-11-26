@@ -1,0 +1,416 @@
+<div class="auth-page">
+  <!-- Background Elements -->
+  <div class="bg-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+    <div class="shape shape-4"></div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="auth-container">
+    <!-- Left Side - Branding -->
+    <div class="brand-section">
+      <div class="brand-content">
+        <div class="logo">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+          <h1 class="brand-title">MediCare</h1>
+        </div>
+        <h2 class="brand-subtitle">Join Our Healthcare Community</h2>
+        <p class="brand-description">
+          Create your patient account and become part of our comprehensive healthcare management system.
+          Access all features designed to streamline your healthcare experience.
+        </p>
+        <div class="benefits">
+          <div class="benefit-item">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+            </svg>
+            <span>Secure Account Management</span>
+          </div>
+          <div class="benefit-item">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            <span>Easy Appointment Booking</span>
+          </div>
+          <div class="benefit-item">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            <span>Real-time Notifications</span>
+          </div>
+          <div class="benefit-item">
+            <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                stroke="currentColor" stroke-width="2" />
+              <path d="M8 12L10.5 14.5L16 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            <span>24/7 Support Access</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side - Registration Form -->
+    <div class="form-section">
+      <div class="form-container">
+        <div class="form-header">
+          <h3 class="form-title">Create Patient Account</h3>
+          <p class="form-subtitle">Fill in your details to get started</p>
+        </div>
+
+        <!-- Registration Form -->
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+          <!-- Personal Information Section -->
+          <div class="form-section-header">
+            <svg class="section-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" />
+            </svg>
+            <span>Personal Information</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" />
+                </svg>
+                <input type="text" formControlName="firstName" class="form-input" placeholder="Enter first name"
+                  (keypress)="onNameKeyPress($event)"
+                  [class.error]="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched">
+              </div>
+              <div class="error-message"
+                *ngIf="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched">
+                <span *ngIf="registerForm.get('firstName')?.errors?.['required']">First name is required</span>
+                <span *ngIf="registerForm.get('firstName')?.errors?.['minlength']">First name must be at least 2
+                  characters</span>
+                <span *ngIf="registerForm.get('firstName')?.errors?.['textOnly']">First name can only contain
+                  letters</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" />
+                </svg>
+                <input type="text" formControlName="lastName" class="form-input" placeholder="Enter last name"
+                  (keypress)="onNameKeyPress($event)"
+                  [class.error]="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched">
+              </div>
+              <div class="error-message"
+                *ngIf="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched">
+                <span *ngIf="registerForm.get('lastName')?.errors?.['required']">Last name is required</span>
+                <span *ngIf="registerForm.get('lastName')?.errors?.['minlength']">Last name must be at least 2
+                  characters</span>
+                <span *ngIf="registerForm.get('lastName')?.errors?.['textOnly']">Last name can only contain
+                  letters</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Information Section -->
+          <div class="form-section-header">
+            <svg class="section-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z"
+                stroke="currentColor" stroke-width="2" />
+              <polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2" />
+            </svg>
+            <span>Contact Information</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email Address (lowercase only)</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z"
+                  stroke="currentColor" stroke-width="2" />
+                <polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2" />
+              </svg>
+              <input type="email" formControlName="email" class="form-input" placeholder="e.g., user@domain.com"
+                (input)="onEmailInput($event)" (keypress)="onEmailKeyPress($event)"
+                [class.error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+            </div>
+            <div class="error-message" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+              <span *ngIf="registerForm.get('email')?.errors?.['required']">Email is required</span>
+              <span *ngIf="registerForm.get('email')?.errors?.['invalidEmail']">Please enter a valid email
+                address</span>
+              <span *ngIf="registerForm.get('email')?.errors?.['hasUppercase']">Email must be in lowercase only</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Country Code</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <select formControlName="countryCode" class="form-input">
+                  <option *ngFor="let code of countryCodes" [value]="code.value">{{ code.label }}</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M22 16.92V19.92C22.0011 20.1985 21.9441 20.4742 21.8325 20.7293C21.7209 20.9845 21.5573 21.2136 21.3521 21.4019C21.1468 21.5901 20.9046 21.7335 20.6407 21.8227C20.3769 21.9119 20.0974 21.9451 19.82 21.92C16.7428 21.5856 13.787 20.5341 11.19 18.85C8.77382 17.3147 6.72533 15.2662 5.18999 12.85C3.49997 10.2412 2.44824 7.27099 2.11999 4.18C2.095 3.90347 2.12787 3.62476 2.21649 3.36162C2.30512 3.09849 2.44756 2.85669 2.63476 2.65162C2.82196 2.44655 3.0498 2.28271 3.30379 2.17052C3.55777 2.05833 3.83233 2.00026 4.10999 2H7.10999C7.59531 1.99522 8.06679 2.16708 8.43376 2.48353C8.80073 2.79999 9.04023 3.23945 9.10999 3.72C9.23662 4.68007 9.47144 5.62273 9.80999 6.53C9.94454 6.88792 9.97366 7.27691 9.89391 7.65088C9.81415 8.02485 9.62886 8.36811 9.35999 8.64L8.08999 9.91C9.51355 12.4135 11.5865 14.4864 14.09 15.91L15.36 14.64C15.6319 14.3711 15.9751 14.1858 16.3491 14.1061C16.7231 14.0263 17.1121 14.0555 17.47 14.19C18.3773 14.5286 19.3199 14.7634 20.28 14.89C20.7658 14.9585 21.2094 15.2032 21.5265 15.5775C21.8437 15.9518 22.0122 16.4296 22 16.92Z"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <input type="tel" formControlName="phoneNumber" class="form-input"
+                  placeholder="Enter 10-digit phone number" maxlength="10" (keypress)="onPhoneKeyPress($event)"
+                  [class.error]="registerForm.get('phoneNumber')?.invalid && (registerForm.get('phoneNumber')?.touched || registerForm.get('phoneNumber')?.dirty)">
+              </div>
+              <div class="error-message"
+                *ngIf="registerForm.get('phoneNumber')?.invalid && (registerForm.get('phoneNumber')?.touched || registerForm.get('phoneNumber')?.dirty)">
+                <span *ngIf="registerForm.get('phoneNumber')?.errors?.['required']">Phone number is required</span>
+                <span *ngIf="registerForm.get('phoneNumber')?.errors?.['invalidLength']">Phone number must be exactly 10
+                  digits</span>
+                <span *ngIf="registerForm.get('phoneNumber')?.errors?.['invalidFirstDigit']">Phone number must start
+                  with 6, 7, 8, or 9</span>
+                <span *ngIf="registerForm.get('phoneNumber')?.errors?.['digitOnly']">Phone number can only contain
+                  digits</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Date of Birth</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2" />
+                  <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2" />
+                  <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2" />
+                </svg>
+                <input type="date" formControlName="dateOfBirth" class="form-input"
+                  [class.error]="registerForm.get('dateOfBirth')?.invalid && registerForm.get('dateOfBirth')?.touched">
+              </div>
+              <div class="error-message"
+                *ngIf="registerForm.get('dateOfBirth')?.invalid && registerForm.get('dateOfBirth')?.touched">
+                <span *ngIf="registerForm.get('dateOfBirth')?.errors?.['required']">Date of birth is required</span>
+                <span *ngIf="registerForm.get('dateOfBirth')?.errors?.['futureDate']">Date of birth cannot be in the
+                  future</span>
+                <span *ngIf="registerForm.get('dateOfBirth')?.errors?.['tooOld']">Age cannot exceed 100 years</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Gender *</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" />
+                </svg>
+                <select formControlName="gender" class="form-input"
+                  [class.error]="registerForm.get('gender')?.invalid && registerForm.get('gender')?.touched">
+                  <option value="">Select Gender</option>
+                  <option *ngFor="let gender of genders" [value]="gender.value">{{ gender.label }}</option>
+                </select>
+              </div>
+              <div class="error-message"
+                *ngIf="registerForm.get('gender')?.invalid && registerForm.get('gender')?.touched">
+                <span *ngIf="registerForm.get('gender')?.errors?.['required']">Gender is required</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Blood Group</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <select formControlName="bloodGroup" class="form-input">
+                  <option *ngFor="let bloodGroup of bloodGroups" [value]="bloodGroup.value">{{ bloodGroup.label }}</option>
+                </select>
+              </div>
+              <div class="error-message">
+                <!-- Blood group is optional, no validation errors -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Account Information Section -->
+          <div class="form-section-header">
+            <svg class="section-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2" />
+              <circle cx="12" cy="16" r="1" fill="currentColor" />
+              <path
+                d="M7 11V7C7 5.67392 7.52678 4.40215 8.46447 3.46447C9.40215 2.52678 10.6739 2 12 2C13.3261 2 14.5979 2.52678 15.5355 3.46447C16.4732 4.40215 17 5.67392 17 7V11"
+                stroke="currentColor" stroke-width="2" />
+            </svg>
+            <span>Account Security</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2" />
+                  <circle cx="12" cy="16" r="1" fill="currentColor" />
+                  <path
+                    d="M7 11V7C7 5.67392 7.52678 4.40215 8.46447 3.46447C9.40215 2.52678 10.6739 2 12 2C13.3261 2 14.5979 2.52678 15.5355 3.46447C16.4732 4.40215 17 5.67392 17 7V11"
+                    stroke="currentColor" stroke-width="2" />
+                </svg>
+                <input [type]="showPassword ? 'text' : 'password'" formControlName="password" class="form-input"
+                  placeholder="Create password"
+                  [class.error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+                <button type="button" class="password-toggle" (click)="togglePassword()">
+                  <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor"
+                      stroke-width="2" />
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" />
+                  </svg>
+                  <svg *ngIf="showPassword" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M17.94 17.94A10.07 10.07 0 0 1 12 20C5 20 1 12 1 12A18.45 18.45 0 0 1 5.06 5.06L17.94 17.94Z"
+                      stroke="currentColor" stroke-width="2" />
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4C19 4 23 12 23 12A18.5 18.5 0 0 1 18.1 19.76L9.9 4.24Z"
+                      stroke="currentColor" stroke-width="2" />
+                    <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2" />
+                  </svg>
+                </button>
+              </div>
+              
+              <!-- Password Requirements Display -->
+              <div class="password-requirements">
+                <h4>Password Requirements:</h4>
+                <ul class="requirements-list">
+                  <li [class.valid]="hasMinLength(registerForm.get('password')?.value)" 
+                      [class.invalid]="registerForm.get('password')?.value?.length > 0 && !hasMinLength(registerForm.get('password')?.value)">
+                    <span class="requirement-icon">✓</span>
+                    At least 8 characters
+                  </li>
+                  <li [class.valid]="hasUppercase(registerForm.get('password')?.value)" 
+                      [class.invalid]="registerForm.get('password')?.value?.length > 0 && !hasUppercase(registerForm.get('password')?.value)">
+                    <span class="requirement-icon">✓</span>
+                    At least one uppercase letter
+                  </li>
+                  <li [class.valid]="hasLowercase(registerForm.get('password')?.value)" 
+                      [class.invalid]="registerForm.get('password')?.value?.length > 0 && !hasLowercase(registerForm.get('password')?.value)">
+                    <span class="requirement-icon">✓</span>
+                    At least one lowercase letter
+                  </li>
+                  <li [class.valid]="hasDigit(registerForm.get('password')?.value)" 
+                      [class.invalid]="registerForm.get('password')?.value?.length > 0 && !hasDigit(registerForm.get('password')?.value)">
+                    <span class="requirement-icon">✓</span>
+                    At least one digit
+                  </li>
+                  <li [class.valid]="hasSpecialChar(registerForm.get('password')?.value)" 
+                      [class.invalid]="registerForm.get('password')?.value?.length > 0 && !hasSpecialChar(registerForm.get('password')?.value)">
+                    <span class="requirement-icon">✓</span>
+                    At least one special character
+                  </li>
+                </ul>
+              </div>
+              
+              <!-- Error Messages (line by line) -->
+              <div class="error-message"
+                *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+                <div *ngIf="registerForm.get('password')?.errors?.['required']">Password is required</div>
+                <div *ngIf="registerForm.get('password')?.errors?.['minlength']">Password must be at least 8 characters</div>
+                <div *ngIf="registerForm.get('password')?.errors?.['noUppercase']">Password must contain at least one uppercase letter</div>
+                <div *ngIf="registerForm.get('password')?.errors?.['noLowercase']">Password must contain at least one lowercase letter</div>
+                <div *ngIf="registerForm.get('password')?.errors?.['noDigit']">Password must contain at least one digit</div>
+                <div *ngIf="registerForm.get('password')?.errors?.['noSpecialChar']">Password must contain at least one special character</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Confirm Password</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2" />
+                  <circle cx="12" cy="16" r="1" fill="currentColor" />
+                  <path
+                    d="M7 11V7C7 5.67392 7.52678 4.40215 8.46447 3.46447C9.40215 2.52678 10.6739 2 12 2C13.3261 2 14.5979 2.52678 15.5355 3.46447C16.4732 4.40215 17 5.67392 17 7V11"
+                    stroke="currentColor" stroke-width="2" />
+                </svg>
+                <input [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword"
+                  class="form-input" placeholder="Confirm password"
+                  [class.error]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
+                <button type="button" class="password-toggle" (click)="toggleConfirmPassword()">
+                  <svg *ngIf="!showConfirmPassword" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor"
+                      stroke-width="2" />
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" />
+                  </svg>
+                  <svg *ngIf="showConfirmPassword" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M17.94 17.94A10.07 10.07 0 0 1 12 20C5 20 1 12 1 12A18.45 18.45 0 0 1 5.06 5.06L17.94 17.94Z"
+                      stroke="currentColor" stroke-width="2" />
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4C19 4 23 12 23 12A18.5 18.5 0 0 1 18.1 19.76L9.9 4.24Z"
+                      stroke="currentColor" stroke-width="2" />
+                    <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2" />
+                  </svg>
+                </button>
+              </div>
+              <div class="error-message"
+                *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
+                <div *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">Please confirm your password</div>
+                <div *ngIf="registerForm.get('confirmPassword')?.errors?.['mismatch']">Passwords do not match</div>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn" [disabled]="registerForm.invalid || isLoading">
+            <span *ngIf="!isLoading">Create Account</span>
+            <div *ngIf="isLoading" class="loading-spinner">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-dasharray="31.416"
+                  stroke-dashoffset="31.416">
+                  <animate attributeName="stroke-dasharray" dur="2s" values="0 31.416;15.708 15.708;0 31.416"
+                    repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" dur="2s" values="0;-15.708;-31.416"
+                    repeatCount="indefinite" />
+                </circle>
+              </svg>
+            </div>
+          </button>
+
+          <div class="divider">
+            <span>or</span>
+          </div>
+
+          <div class="login-link">
+            <span>Already have an account?</span>
+            <a routerLink="/login" class="login-btn">Sign In</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

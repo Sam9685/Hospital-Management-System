@@ -1,0 +1,8 @@
+<!-- frontend/hospital-management-frontend/src/app/app.component.html -->
+<div class="app-container">
+  <app-navbar *ngIf="shouldShowNavbar()"></app-navbar>
+  <main class="main-content" [class.auth-page]="isAuthPage()">
+    <router-outlet></router-outlet>
+  </main>
+  <app-toast></app-toast>
+</div>
